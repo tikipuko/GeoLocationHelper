@@ -28,7 +28,7 @@ public class GeoLocationHelper {
         return postalCodeLocality
     }
     
-    func getLocationString(_ location: CLLocation) -> String {
+    public func getLocationString(_ location: CLLocation) -> String {
         geocoder.reverseGeocodeLocation(location) { (placemarks, error) in
             if (error != nil){
                 print("error in reverseGeocode")
