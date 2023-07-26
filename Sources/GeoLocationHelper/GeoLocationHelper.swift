@@ -40,18 +40,12 @@ public class GeoLocationHelper {
                 completion(nil, nil)
                 return
             }
-            
-            let formattedAddress: String
-            
-            if placemark.isoCountryCode == "US" {
-                formattedAddress = "\(placemark.locality ?? ""), \(placemark.administrativeArea ?? "") \(placemark.postalCode ?? "")"
-            } else if placemark.isoCountryCode == "CA" {
-                formattedAddress = "\(placemark.locality ?? ""), \(placemark.administrativeArea ?? "") \(placemark.postalCode ?? "")"
+                        
+            if (placemark.isoCountryCode == "US" || placemark.isoCountryCode == "CA") {
+                completion("\(placemark.subLocality ?? ""), \(placemark.locality ?? ""), \(placemark.postalCode ?? "")", nil)
             } else {
-                formattedAddress = "\(placemark.locality ?? ""), \(placemark.postalCode ?? ""), \(placemark.administrativeArea ?? "")"
+                completion("\(placemark.subLocality ?? ""), \(placemark.postalCode ?? ""), \(placemark.locality ?? "")", nil)
             }
-
-            completion(formattedAddress, nil)
         }
     }
 }
