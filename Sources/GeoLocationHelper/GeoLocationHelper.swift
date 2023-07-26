@@ -28,30 +28,33 @@ public class GeoLocationHelper {
         return postalCodeLocality
     }
     
-    public func getLocationString(_ location: CLLocation) -> String {
+    public func getLocationString(_ location: CLLocation, completion: @escaping (String) -> Void) {
+        var postalCodeLocality: String?
+        
         geocoder.reverseGeocodeLocation(location) { (placemarks, error) in
-            if (error != nil){
-                print("error in reverseGeocode")
+            if let error = error {
+                print("error in reverseGeocode: \(error.localizedDescription)")
+                completion("Adress Not Found")
+                return
             }
-            let placemark = placemarks! as [CLPlacemark]
             
-            if placemark.count>0 {
-                let placemark = placemarks![0]
-
-                var postalCodeLocality: String
-                if countryCode == "US" {
-                    postalCodeLocality = "\(locality), \(state) \(postalCode)"
-                } else if countryCode == "CA" {
-                    postalCodeLocality = "\(locality), \(state) \(postalCode)"
-                } else {
-                    postalCodeLocality = "\(locality), \(postalCode), \(state)"
-                }
-                return postalCodeLocality
-              //  self.formatedString = self.getFormatedAdress(placemark.subLocality!, placemark.postalCode!, placemark.locality!, placemark.administrativeArea!, placemark.isoCountryCode!)
-                
+            guard let placemark = placemarks?.first else {
+                print("No placemark found")
+                completion("Adress Not Found")
+                return
             }
+            
+            if placemark.isoCountryCode == "US" {
+                postalCodeLocality = "\(placemark.locality ?? ""), \(placemark.administrativeArea ?? "") \(placemark.postalCode ?? "")"
+            } else if placemark.isoCountryCode == "CA" {
+                postalCodeLocality = "\(placemark.locality ?? ""), \(placemark.administrativeArea ?? "") \(placemark.postalCode ?? "")"
+            } else {
+                postalCodeLocality = "\(placemark.locality ?? ""), \(placemark.postalCode ?? ""), \(placemark.administrativeArea ?? "")"
+            }
+            
+            completion(postalCodeLocality!)
         }
-        return formatedString
     }
+
     
 }
