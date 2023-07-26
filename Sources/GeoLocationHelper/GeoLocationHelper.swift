@@ -38,7 +38,16 @@ public class GeoLocationHelper {
             if placemark.count>0 {
                 let placemark = placemarks![0]
 
-                self.formatedString = self.getFormatedAdress(placemark.subLocality!, placemark.postalCode!, placemark.locality!, placemark.administrativeArea!, placemark.isoCountryCode!)
+                var postalCodeLocality: String
+                if countryCode == "US" {
+                    postalCodeLocality = "\(locality), \(state) \(postalCode)"
+                } else if countryCode == "CA" {
+                    postalCodeLocality = "\(locality), \(state) \(postalCode)"
+                } else {
+                    postalCodeLocality = "\(locality), \(postalCode), \(state)"
+                }
+                return postalCodeLocality
+              //  self.formatedString = self.getFormatedAdress(placemark.subLocality!, placemark.postalCode!, placemark.locality!, placemark.administrativeArea!, placemark.isoCountryCode!)
                 
             }
         }
