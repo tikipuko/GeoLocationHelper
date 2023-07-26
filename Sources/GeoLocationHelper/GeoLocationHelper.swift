@@ -28,31 +28,30 @@ public class GeoLocationHelper {
         return postalCodeLocality
     }
     
-    public func getLocationString(_ location: CLLocation, completion: @escaping (String?) -> Void) {
-        geocoder.reverseGeocodeLocation(location) { placemarks, error in
-            if let error = error {
-                print("Error in reverseGeocode: \(error.localizedDescription)")
-                completion(nil)
+    public func getCurrentAddress(_ coordinates: CLLocation, completion: @escaping (String?, Error?) -> Void) {
+        geocoder.reverseGeocodeLocation(coordinates) { placemarks, error in
+
+            guard error == nil else {
+                completion(nil, error)
                 return
             }
-
+            
             guard let placemark = placemarks?.first else {
-                print("No placemark found")
-                completion(nil)
+                completion(nil, nil)
                 return
             }
-
-            let postalCodeLocality: String
-            if placemark.isoCountryCode == "US" || placemark.isoCountryCode == "CA" {
-                postalCodeLocality = "\(placemark.locality ?? ""), \(placemark.administrativeArea ?? "") \(placemark.postalCode ?? "")"
+            
+            let formattedAddress: String
+            
+            if placemark.isoCountryCode == "US" {
+                formattedAddress = "\(placemark.locality ?? ""), \(placemark.administrativeArea ?? "") \(placemark.postalCode ?? "")"
+            } else if placemark.isoCountryCode == "CA" {
+                formattedAddress = "\(placemark.locality ?? ""), \(placemark.administrativeArea ?? "") \(placemark.postalCode ?? "")"
             } else {
-                postalCodeLocality = "\(placemark.locality ?? ""), \(placemark.postalCode ?? ""), \(placemark.administrativeArea ?? "")"
+                formattedAddress = "\(placemark.locality ?? ""), \(placemark.postalCode ?? ""), \(placemark.administrativeArea ?? "")"
             }
 
-            completion(postalCodeLocality)
+            completion(formattedAddress, nil)
         }
     }
-
-
-    
 }
