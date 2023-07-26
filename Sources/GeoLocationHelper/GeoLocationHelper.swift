@@ -28,33 +28,31 @@ public class GeoLocationHelper {
         return postalCodeLocality
     }
     
-    public func getLocationString(_ location: CLLocation, completion: @escaping (String) -> Void) {
-        var postalCodeLocality: String?
-        
-        geocoder.reverseGeocodeLocation(location) { (placemarks, error) in
+    public func getLocationString(_ location: CLLocation, completion: @escaping (String?) -> Void) {
+        geocoder.reverseGeocodeLocation(location) { placemarks, error in
             if let error = error {
-                print("error in reverseGeocode: \(error.localizedDescription)")
-                completion("Adress Not Found")
+                print("Error in reverseGeocode: \(error.localizedDescription)")
+                completion(nil)
                 return
             }
-            
+
             guard let placemark = placemarks?.first else {
                 print("No placemark found")
-                completion("Adress Not Found")
+                completion(nil)
                 return
             }
-            
-            if placemark.isoCountryCode == "US" {
-                postalCodeLocality = "\(placemark.locality ?? ""), \(placemark.administrativeArea ?? "") \(placemark.postalCode ?? "")"
-            } else if placemark.isoCountryCode == "CA" {
+
+            let postalCodeLocality: String
+            if placemark.isoCountryCode == "US" || placemark.isoCountryCode == "CA" {
                 postalCodeLocality = "\(placemark.locality ?? ""), \(placemark.administrativeArea ?? "") \(placemark.postalCode ?? "")"
             } else {
                 postalCodeLocality = "\(placemark.locality ?? ""), \(placemark.postalCode ?? ""), \(placemark.administrativeArea ?? "")"
             }
-            
-            completion(postalCodeLocality!)
+
+            completion(postalCodeLocality)
         }
     }
+
 
     
 }
